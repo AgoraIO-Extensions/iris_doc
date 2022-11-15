@@ -69,7 +69,7 @@ class TSSyntaxMatcher(LanguageSyntaxMatcher):
         m = re.match(
             r'(export )?const (.*)(\: )?(.*) = (.*)', line.strip(), re.M | re.I)
         if m:
-            return m.group(1)
+            return m.group(2)
 
         return None
 
