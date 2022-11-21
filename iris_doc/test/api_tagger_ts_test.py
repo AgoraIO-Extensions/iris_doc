@@ -25,15 +25,19 @@ class TestApiTaggerTS(unittest.TestCase):
         file = self.__fileSystem.open(path, mode="w")
         file.write("""
 export abstract class IRtcEngine {
-    abstract release(sync?: boolean): void;
+    abstract release(sync?: boolean): void {
+    
+    }
 
     abstract setBeautyEffectOptions(
       enabled: boolean,
       options: BeautyOptions,
       type?: MediaSourceType
-    ): number;
+    ): number
 
     onJoinChannelSuccess?(connection: RtcConnection, elapsed: number): void;
+    
+    age: number;
 }
         """)
         file.flush()
@@ -58,6 +62,7 @@ export abstract class IRtcEngine {
 }
         """
         processedContent = self.__fileSystem.readtext(path)
+        # print("tsxiayang: " + processedContent)
         self.assertEqual(processedContent, expectedContent)
 
     def test_matchMemberFunctionWithBody(self):
