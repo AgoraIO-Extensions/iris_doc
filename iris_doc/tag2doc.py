@@ -159,12 +159,9 @@ class Tag2Doc:
                         parameters = []
                         for it in tag_parameters_list:
                             if self.__commentSources[csk].parameters:
-                                obj = dict(
-                                    (list(param.keys())[0], list(param.values())[0]) for param in
-                                    self.__commentSources[csk].parameters if
-                                    list(param.keys())[0].lower() == it)
-                                if len(obj.values()) > 0:
-                                    parameters.append(obj)
+                                for param in self.__commentSources[csk].parameters:
+                                    if list(param.keys())[0].lower() == it:
+                                        parameters.append(param)
                         self.__commentSources[csk].parameters = parameters
                         return self.__commentSources[csk]
 
