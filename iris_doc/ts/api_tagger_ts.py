@@ -90,6 +90,25 @@ class TSSyntaxMatcher(LanguageSyntaxMatcher):
     def matchClassScopeEnd(self, line: str) -> bool:
         return line.strip().startswith("}")
 
+    def findFunctionParameterList(self, function_name: str, line: str) -> List[str]:
+        parameterList: List[str] = []
+        m = re.match(
+            r'(.*)' + function_name + r'\??\((.*)\)(.*)', line.strip())
+        if m:
+            parameterBlock = m.group(2)
+            parameterBlockSplit = parameterBlock.split(',')
+            for parameter in parameterBlockSplit:
+                # Split default value =
+                # e.g., MediaSourceType type = MediaSourceType.primaryCameraSource
+                if "=" in parameter:
+                    parameterList.append(parameter.split(' = ')[0].split(' ')[-1])
+                else:
+                    m = re.match(r'\s?([A-Za-z0-9_]+)\??: (.*)', parameter)
+                    if m:
+                        parameterList.append(m.group(1))
+
+        return parameterList
+
 
 # class DartToken(Token):
 #     def toString(self):
