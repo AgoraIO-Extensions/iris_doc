@@ -174,6 +174,8 @@ class Tag2Doc:
                     id_no_parameters = csk.split("##")[0]
                     if tag_no_parameters == id_no_parameters:
                         return self.__commentSources[csk]
+                elif tag_no_parameters == csk:
+                    return self.__commentSources[csk]
 
         return None
 

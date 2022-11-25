@@ -449,6 +449,14 @@ return2: ""
                 ],
                 "returns": "",
                 "is_hide": false
+            },
+            {
+                "id": "api_irtcengine_destroymediaplayer",
+                "name": "destroyMediaPlayer",
+                "description": "Destroys the media player instance.",
+                "parameters": [],
+                "returns": "",
+                "is_hide": false
             }
         ]
                 """)
@@ -463,6 +471,8 @@ return2: ""
 class RtcEngine {
   Future<void> enableDualStreamMode(
       {required bool enabled, SimulcastStreamConfig? streamConfig});
+
+  Future<void> destroyMediaPlayer(MediaPlayer mediaPlayer);
 }
         """)
         file.flush()
@@ -496,6 +506,9 @@ class RtcEngine {
 /// * [streamConfig] The configuration of the low-quality video stream. See SimulcastStreamConfig .
   Future<void> enableDualStreamMode(
       {required bool enabled, SimulcastStreamConfig? streamConfig});
+
+/// Destroys the media player instance.
+  Future<void> destroyMediaPlayer(MediaPlayer mediaPlayer);
 }
         """
         self.assertEqual(result, expected_content)
