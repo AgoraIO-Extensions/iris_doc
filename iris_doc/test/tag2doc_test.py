@@ -29,7 +29,7 @@ class CommentGroup(unittest.TestCase):
             id="class_one_field1",
             name="field1",
             description="This is a class field",
-            parameters=[{}, {"param1": "param value"}],
+            parameters=[{}, None, {"param1": "param value"}],
             returns="This is return",
             deprecated="",
             note="",
