@@ -179,7 +179,8 @@ class LanguageSpecificationModule:
                 json.dumps(element))
             parent_parameters = finalCommentSource.parameters
 
-            if (element['type_'] == "class" or element['type_'] == "enum") and len(parent_parameters) > 0:
+            if ((element['type_'] == "class" and not self.__config.isCallback2class) or element['type_'] == "enum") \
+                    and len(parent_parameters) > 0:
                 finalCommentSource.parameters = []
                 self.__commentSources[element['id']] = finalCommentSource
 
