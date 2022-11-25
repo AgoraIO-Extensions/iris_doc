@@ -95,6 +95,21 @@ return2: ""
                 "parameters": [],
                 "returns": "",
                 "is_hide": false
+            },
+           {
+                "id": "api_irtcengine_setsubscribeaudioallowlist",
+                "name": "setSubscribeAudioAllowlist",
+                "description": "Sets the allowlist of subscriptions for audio streams.",
+                "parameters": [
+                    {
+                        "uidList": "The user ID list of users that you want to subscribe to."
+                    },
+                    {
+                        "uidNumber": "The number of users in the user ID list."
+                    }
+                ],
+                "returns": "",
+                "is_hide": false
             }
         ]
                 """)
@@ -111,6 +126,9 @@ class RtcEngine {
 
   Future<void> enableDualStreamMode(
       {required bool enabled, SimulcastStreamConfig? streamConfig});
+
+  Future<void> setSubscribeAudioAllowlist(
+      {required List<int> uidList, required int uidNumber});
 }
         """)
         file.flush()
@@ -148,6 +166,13 @@ class RtcEngine {
 /// * [streamConfig] The configuration of the low-quality video stream. See SimulcastStreamConfig .
   Future<void> enableDualStreamMode(
       {required bool enabled, SimulcastStreamConfig? streamConfig});
+
+/// Sets the allowlist of subscriptions for audio streams.
+///
+/// * [uidList] The user ID list of users that you want to subscribe to.
+/// * [uidNumber] The number of users in the user ID list.
+  Future<void> setSubscribeAudioAllowlist(
+      {required List<int> uidList, required int uidNumber});
 }
         """
         self.assertEqual(result, expected_content)
