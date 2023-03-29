@@ -23,14 +23,14 @@ class TSSyntaxMatcher(LanguageSyntaxMatcher):
 
     def matchMemberFunction(self, line: str) -> str:
         m = re.match(
-            r'(abstract |get |set )?([A-Za-z0-9_]+)\??\((.*)(\)?( {)?|;?)$', line.strip())
+            r'(abstract |get |set |public |private )([A-Za-z0-9_]+)\((.*)(\)?( {)?|;?)$', line.strip())
         if m:
             return m.group(2)
 
-        # m = re.match(
-        #     r'([A-Za-z0-9_]+)\((.*)(\)?( {)?|;?)$', line.strip())
-        # if m:
-        #     return m.group(1)
+        m = re.match(
+            r'([A-Za-z0-9_]+)\??\((.*)(\)?( {)?|;?)$', line.strip())
+        if m:
+            return m.group(1)
 
         return None
 
