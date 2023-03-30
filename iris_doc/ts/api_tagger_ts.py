@@ -81,14 +81,11 @@ class TSSyntaxMatcher(LanguageSyntaxMatcher):
 
         return None
 
-    def findFunctionParameterList(self, function_name: str, line: str) -> List[str]:
-        return []
-
     def matchClassScopeStart(self, line: str) -> bool:
-        return line.strip().endswith("{")
+        return line.strip().endswith("{") and not line.strip().startswith("}")
 
     def matchClassScopeEnd(self, line: str) -> bool:
-        return line.strip().startswith("}")
+        return line.strip().startswith("}") and not line.strip().endswith("{")
 
     def findFunctionParameterList(self, function_name: str, line: str) -> List[str]:
         parameterList: List[str] = []
