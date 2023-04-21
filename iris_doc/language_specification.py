@@ -2,7 +2,7 @@ from enum import IntEnum
 import json
 import re
 from fs.base import FS
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 
 class Structure:
@@ -31,6 +31,7 @@ class CommentSource(Structure):
                  name: str = None,
                  description: str = None,
                  parameters: List[Dict[str, str]] = None,
+                 api_declaration: Optional[str] = None,  # make api_declaration optional
                  returns: str = None,
                  deprecated: str = None,
                  note: str = None,
@@ -41,6 +42,7 @@ class CommentSource(Structure):
         self.name = name
         self.description = description
         self.parameters = parameters
+        self.api_declaration = api_declaration
         self.returns = returns
         self.deprecated = deprecated
         self.note = note

@@ -115,34 +115,34 @@ class LanguageSyntaxMatcher(ABC):
         """
         pass
 
-    def matchFunctioinScopeStart(self, line: str) -> bool:
+    def matchFunctionScopeStart(self, line: str) -> bool:
         """
-        Whether match the functioin scope start
+        Whether match the function scope start
         """
         return self.matchClassScopeStart(line)
 
-    def matchFunctioinScopeEnd(self, line: str) -> bool:
+    def matchFunctionScopeEnd(self, line: str) -> bool:
         """
-        Whether match the functioin scope end
+        Whether match the function scope end
         """
         return self.matchClassScopeEnd(line)
 
-    def matchFunctioinParameterScopeStart(self, functionName: str, line: str) -> bool:
+    def matchFunctionParameterScopeStart(self, functionName: str, line: str) -> bool:
         """
-        Whether match the functioin parameter scope start
+        Whether match the function parameter scope start
         """
         return f"{functionName}(" in line
 
-    def matchFunctioinParameterScopeEnd(self, line: str) -> bool:
+    def matchFunctionParameterScopeEnd(self, line: str) -> bool:
         """
-        Whether match the functioin parameter scope end
+        Whether match the function parameter scope end
         """
         return ")" in line
 
     @abstractmethod
     def findFunctionParameterList(self, function_name: str, line: str) -> List[str]:
         """
-        Find the functioin parameters as List
+        Find the function parameters as List
         """
         pass
 
@@ -240,13 +240,20 @@ class DefaultLineScanner(LineScanner):
         while(i < len(lines)):
             if self.__syntaxMatcher.matchClassScopeStart(lines[i]):
                 return i
-
             i += 1
+        return -1
 
+    def _findExtensionScopeStartIndex(self, lines: List[str], startIndex: int) -> int:
+        i = startIndex
+        while(i < len(lines)):
+            if self.__syntaxMatcher.matchExtensionScopeStart(lines[i]):
+                return i
+            i += 1
         return -1
 
     def _findClassScopeEndIndex(self, lines: List[str], scopeStartIndex: int) -> int:
-        if not lines[scopeStartIndex].strip().endswith("{"):
+        if not self.__syntaxMatcher.matchClassScopeStart(lines[scopeStartIndex]) and \
+            self.__syntaxMatcher.matchExtensionsScopeStart(lines[scopeStartIndex]):
             raise IndexError(
                 "The scopeStartIndex is not correct.")
 
@@ -257,9 +264,9 @@ class DefaultLineScanner(LineScanner):
 
         while(i < len(lines)):
             line = lines[i].strip()
-            if self.__syntaxMatcher.matchClassScopeEnd(line) or self.__syntaxMatcher.matchFunctioinScopeEnd(line):
+            if self.__syntaxMatcher.matchClassScopeEnd(line) or self.__syntaxMatcher.matchFunctionScopeEnd(line):
                 scopeStack.pop()
-            elif self.__syntaxMatcher.matchFunctioinScopeStart(line):
+            elif self.__syntaxMatcher.matchFunctionScopeStart(line):
                 scopeStack.append(i)
 
             if len(scopeStack) == 0:
@@ -276,10 +283,26 @@ class DefaultLineScanner(LineScanner):
         return self._findClassScopeEndIndex(lines=lines, scopeStartIndex=scopeStartIndex)
 
     def _findEnumScopeStartIndex(self, lines: List[str], startIndex: int) -> int:
-        return self._findClassScopeStartIndex(lines=lines, startIndex=startIndex)
+        i = startIndex
+        while(i < len(lines)):
+            if self.__syntaxMatcher.matchEnumScopeStart(lines[i]):
+                return i
+            i += 1
+        return -1
 
     def _findEnumScopeEndIndex(self, lines: List[str], scopeStartIndex: int) -> int:
-        return self._findClassScopeEndIndex(lines=lines, scopeStartIndex=scopeStartIndex)
+        if not self.__syntaxMatcher.matchEnumScopeStart(lines[scopeStartIndex]):
+            raise IndexError(
+                "The scopeStartIndex is not correct.")
+
+        i = scopeStartIndex + 1
+
+        while(i < len(lines)):
+            line = lines[i].strip()
+            if self.__syntaxMatcher.matchEnumScopeEnd(line):
+                return i
+            i += 1
+        return -1
 
     def _getAnnotations(self, lineIndex: int) -> List[str]:
         annotations: List[str] = []
@@ -297,16 +320,17 @@ class DefaultLineScanner(LineScanner):
         tokens: List[Token] = []
         classScopeStartIndex = self._findClassScopeStartIndex(
             self.__fileLines, lineIndex)
+        if classScopeStartIndex == -1:
+            classScopeStartIndex = self._findExtensionScopeStartIndex(
+                self.__fileLines, lineIndex)
 
         classScopeEndIndex = self._findClassScopeEndIndex(
             self.__fileLines, classScopeStartIndex)
-
         tokens.append(self._createToken(
             offset=lineIndex,
             type=type,
             name1=className,
             annotations=self._getAnnotations(lineIndex)))
-
         i = classScopeStartIndex + 1
         while(i < classScopeEndIndex):
             line = self.__fileLines[i]
@@ -373,17 +397,14 @@ class DefaultLineScanner(LineScanner):
         while index < endIndex:
             line = self.__fileLines[index]
 
-            if self.__syntaxMatcher.matchFunctioinParameterScopeStart(functionName, line):
+            if self.__syntaxMatcher.matchFunctionParameterScopeStart(functionName, line):
                 parameterScopeStartIndex = index
-
-            if self.__syntaxMatcher.matchFunctioinParameterScopeEnd(line):
+            if self.__syntaxMatcher.matchFunctionParameterScopeEnd(line):
                 parameterScopeEndIndex = index
                 break
 
             index += 1
-
-        parameterBlockLine = "".join(map(lambda x: x.strip(), self.__fileLines[parameterScopeStartIndex:parameterScopeEndIndex + 1]))
-
+        parameterBlockLine = (' ' if self.__class__.__name__ == 'ObjCLineScanner' else '').join(map(lambda x: x.strip(), self.__fileLines[parameterScopeStartIndex:parameterScopeEndIndex + 1]))
         parameterList = self.__syntaxMatcher.findFunctionParameterList(functionName, parameterBlockLine)
 
         return (parameterList, parameterScopeStartIndex, parameterScopeEndIndex)
@@ -495,7 +516,7 @@ class DefaultLineScanner(LineScanner):
             extensionName = self.__syntaxMatcher.matchExtension(fileLine)
             if extensionName:
                 extensionTokens = self._getClassTokens(
-                    className=extensionName, lineIndex=lineIndex, type=TYPE_EXTENSION)
+                    className=extensionName.replace('(','').replace(')',''), lineIndex=lineIndex, type=TYPE_EXTENSION)
                 tokens.extend(extensionTokens[1])
                 lineIndex = extensionTokens[0] + 1
                 continue
@@ -587,7 +608,6 @@ class ApiTagger:
 
         outputFileLines = self._tagBuilder.build(
             str(file.read()).splitlines())
-
         file = self._fileSystem.open(filePath, mode="w")
         file.write('\n'.join(outputFileLines))
         file.flush()
