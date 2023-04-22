@@ -2,17 +2,75 @@ import fs.memoryfs
 import unittest
 from iris_doc.api_tagger import ApiTagger, TagBuilder
 from iris_doc.oc.api_tagger_oc import ObjCTagBuilder
-input_output_pairs_desc = [
+input_output_pairs_desc = ["Protocol with annotations and functions", "NS_SWIFT_NAME First",
     "Basic Class", "Enums", "class interfaces and complex method params",
     "Protocols", "Class import, interface properties", "Interface methods with no params, and multi params"
 ]
 input_output_pairs = [
+("""@protocol AgoraRtmClientDelegate <NSObject>
+@optional
+
+- (void)rtmKit:(AgoraRtmClientKit * _Nonnull)rtmKit
+    onMessageEvent:(AgoraRtmMessageEvent * _Nonnull)event;
+
+- (void)rtmKit:(AgoraRtmClientKit * _Nonnull)rtmKit
+    onPresenceEvent:(AgoraRtmPresenceEvent * _Nonnull)event;
+
+- (void)rtmKit:(AgoraRtmClientKit * _Nonnull)rtmKit
+    onUser:(NSString * _Nonnull)userId
+    joinChannel:(NSString * _Nonnull)channelName
+    result:(AgoraRtmStreamChannelErrorCode)errorCode;
+@end""", """/* class_agorartmclientdelegate */
+@protocol AgoraRtmClientDelegate <NSObject>
+@optional
+
+/* api_agorartmclientdelegate_rtmkit##rtmkit#event */
+- (void)rtmKit:(AgoraRtmClientKit * _Nonnull)rtmKit
+    onMessageEvent:(AgoraRtmMessageEvent * _Nonnull)event;
+
+/* api_agorartmclientdelegate_rtmkit##rtmkit#event */
+- (void)rtmKit:(AgoraRtmClientKit * _Nonnull)rtmKit
+    onPresenceEvent:(AgoraRtmPresenceEvent * _Nonnull)event;
+
+/* api_agorartmclientdelegate_rtmkit##rtmkit#userid#channelname#errorcode */
+- (void)rtmKit:(AgoraRtmClientKit * _Nonnull)rtmKit
+    onUser:(NSString * _Nonnull)userId
+    joinChannel:(NSString * _Nonnull)channelName
+    result:(AgoraRtmStreamChannelErrorCode)errorCode;
+@end"""),
+("""NS_SWIFT_NAME(AgoraVideoRenderingTracingInfo) __attribute__((visibility("default"))) @interface AgoraVideoRenderingTracingInfo : NSObject
+@property (assign, nonatomic) NSInteger elapsedTime NS_SWIFT_NAME(elapsedTime);
+@property (assign, nonatomic) NSInteger start2JoinChannel NS_SWIFT_NAME(start2JoinChannel);
+@property (assign, nonatomic) NSInteger join2JoinSuccess NS_SWIFT_NAME(join2JoinSuccess);
+@property (assign, nonatomic) NSInteger joinSuccess2RemoteJoined NS_SWIFT_NAME(joinSuccess2RemoteJoined);
+@property (assign, nonatomic) NSInteger remoteJoined2SetView NS_SWIFT_NAME(remoteJoined2SetView);
+@property (assign, nonatomic) NSInteger remoteJoined2UnmuteVideo NS_SWIFT_NAME(remoteJoined2UnmuteVideo);
+@property (assign, nonatomic) NSInteger remoteJoined2PacketReceived NS_SWIFT_NAME(remoteJoined2PacketReceived);
+
+@end""","""/* class_agoravideorenderingtracinginfo */
+NS_SWIFT_NAME(AgoraVideoRenderingTracingInfo) __attribute__((visibility("default"))) @interface AgoraVideoRenderingTracingInfo : NSObject
+/* class_agoravideorenderingtracinginfo_elapsedtime */
+@property (assign, nonatomic) NSInteger elapsedTime NS_SWIFT_NAME(elapsedTime);
+/* class_agoravideorenderingtracinginfo_start2joinchannel */
+@property (assign, nonatomic) NSInteger start2JoinChannel NS_SWIFT_NAME(start2JoinChannel);
+/* class_agoravideorenderingtracinginfo_join2joinsuccess */
+@property (assign, nonatomic) NSInteger join2JoinSuccess NS_SWIFT_NAME(join2JoinSuccess);
+/* class_agoravideorenderingtracinginfo_joinsuccess2remotejoined */
+@property (assign, nonatomic) NSInteger joinSuccess2RemoteJoined NS_SWIFT_NAME(joinSuccess2RemoteJoined);
+/* class_agoravideorenderingtracinginfo_remotejoined2setview */
+@property (assign, nonatomic) NSInteger remoteJoined2SetView NS_SWIFT_NAME(remoteJoined2SetView);
+/* class_agoravideorenderingtracinginfo_remotejoined2unmutevideo */
+@property (assign, nonatomic) NSInteger remoteJoined2UnmuteVideo NS_SWIFT_NAME(remoteJoined2UnmuteVideo);
+/* class_agoravideorenderingtracinginfo_remotejoined2packetreceived */
+@property (assign, nonatomic) NSInteger remoteJoined2PacketReceived NS_SWIFT_NAME(remoteJoined2PacketReceived);
+
+@end"""),
 ("""@interface AgoraRtcEngineKit
 - (int)enableDualStreamMode:(BOOL)enabled
     streamConfig:(AgoraSimulcastStreamConfig* _Nonnull)streamConfig NS_SWIFT_NAME(enableDualStreamMode(_:streamConfig:));
 @end""","""/* class_agorartcenginekit */
 @interface AgoraRtcEngineKit
-/* api_agorartcenginekit_enabledualstreammode##streamconfig */
+/* api_agorartcenginekit_enabledualstreammode##enabled#streamconfig */
 - (int)enableDualStreamMode:(BOOL)enabled
     streamConfig:(AgoraSimulcastStreamConfig* _Nonnull)streamConfig NS_SWIFT_NAME(enableDualStreamMode(_:streamConfig:));
 @end"""),

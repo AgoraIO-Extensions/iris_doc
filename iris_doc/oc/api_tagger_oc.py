@@ -6,9 +6,9 @@ import re
 class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
     def matchComment(self, line: str) -> str:
         """
-        Return a matched comments or None. Objective-C Comments start with //* or ///
+        Return a matched comments or None. Objective-C Comments start with /* or ///
         """
-        if line.strip().startswith("/**") or line.strip().startswith("*") or line.strip().startswith("*/") or line.strip().startswith("///"):
+        if line.strip().startswith("/*") or line.strip().startswith("*") or line.strip().startswith("*/") or line.strip().startswith("///"):
             return line
         return None
 
@@ -40,7 +40,7 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
         """
         Return a matched member variable of class or None
         """
-        m = re.match(r"\@property.*\ \*?(\w*);", line.strip())
+        m = re.match(r'@property.*?\b(\w+)\b(?=\s*(?:NS_SWIFT_NAME|\;))', line.strip())
         if m:
             return m.group(1)
         return None
@@ -67,7 +67,15 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
         """
         Return a matched annotation name or None
         """
-        m = re.match(r"NS_(\w+)\s*", line.strip())
+        if 'NS_ASSUME_NONNULL' in line:
+            return line
+        m = re.match(r'^@\w+$', line.strip())
+        if m:
+            return line.strip()
+        m = re.match(
+            r'^\s*(?!.*(NS_ASSUME_NONNULL_BEGIN|NS_ASSUME_NONNULL_END|IBInspectable|IBOutlet|IBAction|\b(?:class|enum|interface|protocol|struct)\b))__(attribute|deprecated|availability)(__)?\b.*',
+            line.strip()
+        )
         if m:
             return m.group(1)
         return None
@@ -120,10 +128,16 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
         return re.match(r'\s*};\s*', line) is not None
 
     def matchFunctionParameterScopeEnd(self, line: str) -> bool:
-        return 'NS_SWIFT_NAME' in line or ';' in line
+        return ';' in line
 
     def findFunctionParameterList(self, function_name: str, line: str) -> List[str]:
         return re.findall(r':\s*\([\w+\s*\*?\s*_?\(\)^<>,\w+\s*]*\)(\w+)', line.strip())
+
+    def matchFunctionScopeStart(self, line: str) -> bool:
+        return self.matchMemberFunction(line)
+
+    def matchFunctionScopeEnd(self, line: str) -> bool:
+        return self.matchFunctionParameterScopeEnd(line)
 
 class ObjCToken(Token):
 

@@ -133,7 +133,6 @@ class LanguageSpecificationModule:
             id_split = id_.split('_')
 
             new_id = '_'.join(id_split)
-
             if self.__config.idPatternV2:
                 new_id_split = new_id.split('_')
 
@@ -145,9 +144,9 @@ class LanguageSpecificationModule:
                 parentElement = next(
                     (e for e in elementsCopy if e['id'] == f"{tmpType}_{newName1}"), None)
                 if parentElement:
-                    newName1 = parentElement['name'].lower()
+                    newName1 = parentElement['name'].lower().translate(str.maketrans("", "", "()"))
                 else:
-                    newName1 = element['name'].lower()
+                    newName1 = element['name'].lower().translate(str.maketrans("", "", "()"))
 
                 if self.__config.isCallback2api and newType == "callback":
                     newType = "api"
