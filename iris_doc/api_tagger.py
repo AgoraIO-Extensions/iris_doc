@@ -260,12 +260,18 @@ class DefaultLineScanner(LineScanner):
         scopeStack.append(scopeStartIndex)
 
         i = scopeStartIndex + 1
+        class_only = self.__class__.__name__ == 'ObjCLineScanner'
         while(i < len(lines)):
             line = lines[i].strip()
-            if self.__syntaxMatcher.matchClassScopeEnd(line) or self.__syntaxMatcher.matchFunctionScopeEnd(line):
-                scopeStack.pop()
-            elif self.__syntaxMatcher.matchFunctionScopeStart(line) or self.__syntaxMatcher.matchClassScopeStart(line):
-                scopeStack.append(i)
+            if class_only:
+                # Obj-C does not have the same scope start and end for classes and other types.
+                if self.__syntaxMatcher.matchClassScopeEnd(line):
+                    scopeStack.pop()
+            else:
+                if self.__syntaxMatcher.matchClassScopeEnd(line) or self.__syntaxMatcher.matchFunctionScopeEnd(line):
+                    scopeStack.pop()
+                elif self.__syntaxMatcher.matchFunctionScopeStart(line) or self.__syntaxMatcher.matchClassScopeStart(line):
+                    scopeStack.append(i)
             if len(scopeStack) == 0:
                 return i
 
@@ -427,7 +433,7 @@ class DefaultLineScanner(LineScanner):
                 break
 
             index += 1
-        parameterBlockLine = ''.join(map(lambda x: x.strip(), self.__fileLines[parameterScopeStartIndex:parameterScopeEndIndex + 1]))
+        parameterBlockLine = (' ' if self.__class__.__name__ == 'ObjCLineScanner' else '').join(map(lambda x: x.strip(), self.__fileLines[parameterScopeStartIndex:parameterScopeEndIndex + 1]))
         parameterList = self.__syntaxMatcher.findFunctionParameterList(functionName, parameterBlockLine)
         return (parameterList, parameterScopeStartIndex, parameterScopeEndIndex)
 
