@@ -130,6 +130,9 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
     def matchFunctionParameterScopeEnd(self, line: str) -> bool:
         return ';' in line
 
+    def matchCallbackReplacer(self, function_name: str) -> bool:
+        return function_name.lower() in ["rtcengine"]
+
     def findFunctionParameterList(self, function_name: str, line: str) -> List[str]:
         return re.findall(r':\s*\([\w+\s*\*?\s*_?\(\)^<>,\w+\s*]*\)(\w+)', line.strip())
 
@@ -138,6 +141,23 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
 
     def matchFunctionScopeEnd(self, line: str) -> bool:
         return self.matchFunctionParameterScopeEnd(line)
+
+    def findFunctionLink(self, class_name: str, line: str) -> str:
+        pattern = r'([^:\n-+]*):'
+
+        matches: List[str] = re.findall(pattern, line.split('NS_SWIFT_NAME')[0].strip())
+
+        matches_joined = ':'.join(matches)
+        return f'{class_name}/{matches_joined}'
+
+    def findCallbackName(self, function_name: str, line: str) -> str:
+        pattern = r'([^:\n-+]*):'
+
+        matches: List[str] = re.findall(pattern, line.split('NS_SWIFT_NAME')[0].strip())
+
+        if len(matches) > 1:
+            return matches[1]
+        return function_name
 
 class ObjCToken(Token):
 
