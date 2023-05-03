@@ -127,5 +127,113 @@ return3: ""
         """
         self.assertEqual(result, expected_content)
 
+    def test_tag2doc_delegate(self):
+        config_file_path = "fmt_oc.yaml"
+        self.__fileSystem.create(config_file_path, wipe=True)
+        config_file = self.__fileSystem.open(config_file_path, mode="w")
+        config_file.write("""
+comment1: ""
+comment2: "///"
+comment3: ""
+summary1: ""
+summary2: ""
+tag1: "> "
+tag2: ""
+param1: "- Parameter "
+param2: ": "
+param3: ""
+link1: "``"
+link2: "``"
+ignore: "@ignore"
+return1: ""
+return2: "- Returns: "
+return3: ""
+""")
+
+        config_file.flush()
+        config_file.close()
+
+        json_file_path = "testMultipleTemplateFile1.json"
+        self.__fileSystem.create(json_file_path, wipe=True)
+        json_file = self.__fileSystem.open(json_file_path, mode="w")
+        json_file.write("""
+        [
+            {
+                "id": "class_irtcengineeventhandler",
+                "name": "AgoraRtcEngineDelegate",
+                "description": "The SDK uses the interface to send event notifications to your app. Your app can get those notifications through methods that inherit this interface.",
+                "parameters": [],
+                "returns": "",
+                "is_hide": false
+            }, {
+                "id": "callback_irtcengineeventhandler_onrhythmplayerstatechanged",
+                "name": "didRhythmPlayerStateChanged",
+                "description": "Occurs when the state of virtual metronome changes. When the state of the virtual metronome changes, the SDK triggers this callback to report the current state of the virtual metronome. This callback indicates the state of the local audio stream and enables you to troubleshoot issues when audio exceptions occur.",
+                "parameters": [
+                    { "state": "For the current virtual metronome status, see AgoraRhythmPlayerState ." },
+                    { "errorCode": "For the error codes and error messages related to virtual metronome errors, see AgoraRhythmPlayerError ." }
+                ],
+                "returns": "",
+                "is_hide": false
+            }
+        ]
+                """)
+        json_file.flush()
+        json_file.close()
+
+        dart_file_path = "member_function.ts"
+
+        self.__fileSystem.create(dart_file_path, wipe=True)
+        file = self.__fileSystem.open(dart_file_path, mode="w")
+        file.write("""
+@protocol AgoraRtcEngineDelegate <NSObject>
+@optional
+
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+    didRhythmPlayerStateChanged:(AgoraRhythmPlayerState)state
+                      errorCode:(AgoraRhythmPlayerError)errorCode
+    NS_SWIFT_NAME(rtcEngine(_:didRhythmPlayerStateChanged:errorCode:));
+@end
+        """)
+        file.flush()
+        file.close()
+
+        fakeExportFileParser = FakeExportFileParser([dart_file_path])
+
+        languageSpecificationConfig: LanguageSpecificationConfig = LanguageSpecificationConfig(
+            isCallback2class=False,
+            isCallback2api=True,
+            idPatternV2=True)
+
+        _processExportFile(languageSpecificationConfig=languageSpecificationConfig,
+                           configPath=config_file_path,
+                           tagBuilder=ObjCTagBuilder(),
+                           exportFileParser=fakeExportFileParser,
+                           postPhase=DefaultPostPhase(),
+                           exportFilePath="",
+                           templateFilePathList=[json_file_path],
+                           fileSystem=self.__fileSystem,
+                           isForceMarkNoDoc=False
+                           )
+
+        result = self.__fileSystem.readtext(dart_file_path)
+
+        expected_content = """
+/// The SDK uses the interface to send event notifications to your app. Your app can get those notifications through methods that inherit this interface.
+@protocol AgoraRtcEngineDelegate <NSObject>
+@optional
+
+/// Occurs when the state of virtual metronome changes. When the state of the virtual metronome changes, the SDK triggers this callback to report the current state of the virtual metronome. This callback indicates the state of the local audio stream and enables you to troubleshoot issues when audio exceptions occur.
+///
+/// - Parameter state: For the current virtual metronome status, see AgoraRhythmPlayerState .
+/// - Parameter errorCode: For the error codes and error messages related to virtual metronome errors, see AgoraRhythmPlayerError .
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+    didRhythmPlayerStateChanged:(AgoraRhythmPlayerState)state
+                      errorCode:(AgoraRhythmPlayerError)errorCode
+    NS_SWIFT_NAME(rtcEngine(_:didRhythmPlayerStateChanged:errorCode:));
+@end
+        """
+        self.assertEqual(result, expected_content)
+
 if __name__ == '__main__':
     unittest.main()

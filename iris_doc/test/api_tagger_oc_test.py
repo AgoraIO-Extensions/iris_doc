@@ -2,11 +2,72 @@ import fs.memoryfs
 import unittest
 from iris_doc.api_tagger import ApiTagger, TagBuilder
 from iris_doc.oc.api_tagger_oc import ObjCTagBuilder
-input_output_pairs_desc = ["Protocol with annotations and functions", "NS_SWIFT_NAME First",
+input_output_pairs_desc = ["RTC Delegate", "Protocol with annotations and functions", "NS_SWIFT_NAME First",
     "Basic Class", "Enums", "class interfaces and complex method params",
     "Protocols", "Class import, interface properties", "Interface methods with no params, and multi params"
 ]
-input_output_pairs = [
+input_output_pairs = [("""@protocol AgoraRtcEngineDelegate <NSObject>
+@optional
+
+#pragma mark Delegate Methods
+
+#pragma mark Core Delegate Methods
+
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+    didOccurError:(AgoraErrorCode)errorCode
+    NS_SWIFT_NAME(rtcEngine(_:didOccurError:));
+
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+    connectionChangedToState:(AgoraConnectionState)state
+                      reason:(AgoraConnectionChangedReason)reason
+    NS_SWIFT_NAME(rtcEngine(_:connectionChangedTo:reason:));
+
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+    didClientRoleChanged:(AgoraClientRole)oldRole
+                 newRole:(AgoraClientRole)newRole
+          newRoleOptions:(AgoraClientRoleOptions *_Nullable)newRoleOptions
+    NS_SWIFT_NAME(rtcEngine(_:didClientRoleChanged:newRole:newRoleOptions:));
+
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+     wlAccMessage:(AgoraWlAccReason)reason
+           action:(AgoraWlAccAction)action
+         wlAccMsg:(NSString *_Nonnull)wlAccMsg
+    NS_SWIFT_NAME(rtcEngine(_:wlAccMessage:action:wlAccMsg:));
+
+@end""", """/* class_agorartcenginedelegate */
+@protocol AgoraRtcEngineDelegate <NSObject>
+@optional
+
+#pragma mark Delegate Methods
+
+#pragma mark Core Delegate Methods
+
+/* api_agorartcenginedelegate_didoccurerror##engine#errorcode */
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+    didOccurError:(AgoraErrorCode)errorCode
+    NS_SWIFT_NAME(rtcEngine(_:didOccurError:));
+
+/* api_agorartcenginedelegate_connectionchangedtostate##engine#state#reason */
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+    connectionChangedToState:(AgoraConnectionState)state
+                      reason:(AgoraConnectionChangedReason)reason
+    NS_SWIFT_NAME(rtcEngine(_:connectionChangedTo:reason:));
+
+/* api_agorartcenginedelegate_didclientrolechanged##engine#oldrole#newrole#newroleoptions */
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+    didClientRoleChanged:(AgoraClientRole)oldRole
+                 newRole:(AgoraClientRole)newRole
+          newRoleOptions:(AgoraClientRoleOptions *_Nullable)newRoleOptions
+    NS_SWIFT_NAME(rtcEngine(_:didClientRoleChanged:newRole:newRoleOptions:));
+
+/* api_agorartcenginedelegate_wlaccmessage##engine#reason#action#wlaccmsg */
+- (void)rtcEngine:(AgoraRtcEngineKit *_Nonnull)engine
+     wlAccMessage:(AgoraWlAccReason)reason
+           action:(AgoraWlAccAction)action
+         wlAccMsg:(NSString *_Nonnull)wlAccMsg
+    NS_SWIFT_NAME(rtcEngine(_:wlAccMessage:action:wlAccMsg:));
+
+@end"""),
 ("""@protocol AgoraRtmClientDelegate <NSObject>
 @optional
 
