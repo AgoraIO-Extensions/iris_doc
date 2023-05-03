@@ -21,7 +21,7 @@ class TestIrisDocCliObjC(unittest.TestCase):
         cls.__fileSystem.close()
 
     def test_tag2doc_member_function(self):
-        config_file_path = "fmt_ts.yaml"
+        config_file_path = "fmt_oc.yaml"
         self.__fileSystem.create(config_file_path, wipe=True)
         config_file = self.__fileSystem.open(config_file_path, mode="w")
         config_file.write("""
@@ -79,10 +79,10 @@ return3: ""
         json_file.flush()
         json_file.close()
 
-        dart_file_path = "member_function.ts"
+        oc_file_path = "member_function.h"
 
-        self.__fileSystem.create(dart_file_path, wipe=True)
-        file = self.__fileSystem.open(dart_file_path, mode="w")
+        self.__fileSystem.create(oc_file_path, wipe=True)
+        file = self.__fileSystem.open(oc_file_path, mode="w")
         file.write("""
 @interface AgoraRtcEngineKit
 - (int)enableDualStreamMode:(BOOL)enabled
@@ -92,7 +92,7 @@ return3: ""
         file.flush()
         file.close()
 
-        fakeExportFileParser = FakeExportFileParser([dart_file_path])
+        fakeExportFileParser = FakeExportFileParser([oc_file_path])
 
         languageSpecificationConfig: LanguageSpecificationConfig = LanguageSpecificationConfig(
             isCallback2class=False,
@@ -110,7 +110,7 @@ return3: ""
                            isForceMarkNoDoc=False
                            )
 
-        result = self.__fileSystem.readtext(dart_file_path)
+        result = self.__fileSystem.readtext(oc_file_path)
 
         expected_content = """
 /// The basic interface of the Agora SDK that implements the core functions of real-time communication.
@@ -181,10 +181,10 @@ return3: ""
         json_file.flush()
         json_file.close()
 
-        dart_file_path = "member_function.ts"
+        oc_file_path = "delegate_function.h"
 
-        self.__fileSystem.create(dart_file_path, wipe=True)
-        file = self.__fileSystem.open(dart_file_path, mode="w")
+        self.__fileSystem.create(oc_file_path, wipe=True)
+        file = self.__fileSystem.open(oc_file_path, mode="w")
         file.write("""
 @protocol AgoraRtcEngineDelegate <NSObject>
 @optional
@@ -198,7 +198,7 @@ return3: ""
         file.flush()
         file.close()
 
-        fakeExportFileParser = FakeExportFileParser([dart_file_path])
+        fakeExportFileParser = FakeExportFileParser([oc_file_path])
 
         languageSpecificationConfig: LanguageSpecificationConfig = LanguageSpecificationConfig(
             isCallback2class=False,
@@ -216,7 +216,7 @@ return3: ""
                            isForceMarkNoDoc=False
                            )
 
-        result = self.__fileSystem.readtext(dart_file_path)
+        result = self.__fileSystem.readtext(oc_file_path)
 
         expected_content = """
 /// The SDK uses the interface to send event notifications to your app. Your app can get those notifications through methods that inherit this interface.
