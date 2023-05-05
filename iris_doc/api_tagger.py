@@ -39,6 +39,20 @@ class LanguageSyntaxMatcher(ABC):
         pass
 
     @abstractmethod
+    def matchClassScopeStart(self, line: str) -> bool:
+        """
+        Whether match the class scope start
+        """
+        pass
+
+    @abstractmethod
+    def matchClassScopeEnd(self, line: str) -> bool:
+        """
+        Whether match the class scope end
+        """
+        pass
+
+    @abstractmethod
     def matchClassConstructor(self, line: str, className: str) -> str:
         """
         Return a matched constructor of class or None
@@ -66,6 +80,18 @@ class LanguageSyntaxMatcher(ABC):
         """
         pass
 
+    def matchEnumScopeStart(self, line: str) -> bool:
+        """
+        Whether match the enum scope start
+        """
+        return self.matchClassScopeStart(line)
+
+    def matchEnumScopeEnd(self, line: str) -> bool:
+        """
+        Whether match the enum scope end
+        """
+        return self.matchClassScopeEnd(line)
+
     @abstractmethod
     def matchEnumValue(self, line: str) -> str:
         """
@@ -87,6 +113,18 @@ class LanguageSyntaxMatcher(ABC):
         """
         pass
 
+    def matchExtensionScopeStart(self, line: str) -> bool:
+        """
+        Whether match the extension scope start
+        """
+        return self.matchClassScopeStart(line)
+
+    def matchExtensionScopeEnd(self, line: str) -> bool:
+        """
+        Whether match the extension scope end
+        """
+        return self.matchExtensionScopeEnd(line)
+
     @abstractmethod
     def matchConstant(self, line: str) -> str:
         """
@@ -98,20 +136,6 @@ class LanguageSyntaxMatcher(ABC):
     def matchFunction(self, line: str) -> str:
         """
         Return a matched top-level function or None
-        """
-        pass
-
-    @abstractmethod
-    def matchClassScopeStart(self, line: str) -> bool:
-        """
-        Whether match the class scope start
-        """
-        pass
-
-    @abstractmethod
-    def matchClassScopeEnd(self, line: str) -> bool:
-        """
-        Whether match the class scope end
         """
         pass
 
@@ -146,29 +170,13 @@ class LanguageSyntaxMatcher(ABC):
         """
         pass
 
-    def matchEnumScopeStart(self, line: str) -> bool:
+    def findFunctionName(self, block: str) -> str:
         """
-        Whether match the enum scope start
+        Find the functioin name from the function definition block (start from `matchFunctioinScopeStart`, 
+        and end with `matchFunctioinScopeEnd`), if you want to fine-grained to find out what the function 
+        name is from the block, you can override this function to resolve it.
         """
-        return self.matchClassScopeStart(line)
-
-    def matchEnumScopeEnd(self, line: str) -> bool:
-        """
-        Whether match the enum scope end
-        """
-        return self.matchClassScopeEnd(line)
-
-    def matchExtensionScopeStart(self, line: str) -> bool:
-        """
-        Whether match the extension scope start
-        """
-        return self.matchClassScopeStart(line)
-
-    def matchExtensionScopeEnd(self, line: str) -> bool:
-        """
-        Whether match the extension scope end
-        """
-        return self.matchExtensionScopeEnd(line)
+        return None
 
 
 class Token:
@@ -397,19 +405,38 @@ class DefaultLineScanner(LineScanner):
                            classScopeEndIndex: int) -> Tuple[int, List[Token]]:
         tokens: List[Token] = []
 
+        # function1##param1#param2#param3
+        functionSignature=functionName
+
         functionScopeStartIndex = self._findFunctionScopeStartIndex(
             self.__fileLines, lineIndex)
 
-        start_index = lineIndex
-        end_index = classScopeEndIndex if functionScopeStartIndex == -1 else functionScopeStartIndex
+        parameter_list_start_index = lineIndex
+        parameter_list_end_index = classScopeEndIndex if functionScopeStartIndex == -1 else functionScopeStartIndex
 
         parameterList, parameter_scope_start, parameter_scope_end = self._getFunctionParameterList(
             functionName=functionName, 
-            startIndex=start_index,
-            endIndex=end_index)
+            startIndex=parameter_list_start_index,
+            endIndex=parameter_list_end_index)
+        
 
-        # function1##param1#param2#param3
-        functionSignature=functionName
+        scope_end_index = parameter_scope_end
+
+        actual_function_scope_start_index = functionScopeStartIndex if functionScopeStartIndex != -1 else lineIndex
+        actual_function_scope_end_index = parameter_scope_end
+
+        if functionScopeStartIndex != -1 and functionScopeStartIndex > classScopeStartIndex and functionScopeStartIndex < classScopeEndIndex:
+            actual_function_scope_end_index = self._findFunctionScopeEndIndex(
+                self.__fileLines, functionScopeStartIndex)
+
+
+            scope_end_index = actual_function_scope_end_index
+
+        block = "\n".join(self.__fileLines[actual_function_scope_start_index:actual_function_scope_end_index + 1])
+        print(f"block: {block}")
+        fine_grained_func_name = self.__syntaxMatcher.findFunctionName(block)
+        functionSignature = fine_grained_func_name if fine_grained_func_name else functionSignature
+
 
         if len(parameterList) > 0:
             functionSignature=f'{functionSignature}##{"#".join(parameterList)}'
@@ -428,12 +455,12 @@ class DefaultLineScanner(LineScanner):
 
         tokens.append(token)
 
-        if functionScopeStartIndex != -1 and functionScopeStartIndex > classScopeStartIndex and functionScopeStartIndex < classScopeEndIndex:
-            functionScopeEndIndex = self._findFunctionScopeEndIndex(
-                self.__fileLines, functionScopeStartIndex)
-            return (functionScopeEndIndex, tokens)
+        # if functionScopeStartIndex != -1 and functionScopeStartIndex > classScopeStartIndex and functionScopeStartIndex < classScopeEndIndex:
+        #     functionScopeEndIndex = self._findFunctionScopeEndIndex(
+        #         self.__fileLines, functionScopeStartIndex)
+        #     return (functionScopeEndIndex, tokens)
 
-        return parameter_scope_end, tokens
+        return scope_end_index, tokens
 
     def _getEnumTokens(self, enumName: str, lineIndex: int) -> Tuple[int, List[Token]]:
         tokens: List[Token] = []
