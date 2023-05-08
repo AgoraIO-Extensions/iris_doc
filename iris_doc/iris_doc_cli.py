@@ -162,8 +162,8 @@ def run():
         exportFileDir = os.path.dirname(exportFilePath)
         postPhase = PostPhaseDart(exportFileDir)
     elif lang == "oc":
-        isCallback2class = True
-        isCallback2api = False
+        isCallback2class = False
+        isCallback2api = True
         exportFileParser = ExportFileParserObjC(fileSystem=fileSystem)
         tagBuilder = ObjCTagBuilder()
         exportFileDir = os.path.dirname(exportFilePath)

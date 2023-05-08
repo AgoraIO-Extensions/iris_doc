@@ -2,11 +2,44 @@ import fs.memoryfs
 import unittest
 from iris_doc.api_tagger import ApiTagger, TagBuilder
 from iris_doc.oc.api_tagger_oc import ObjCTagBuilder
-input_output_pairs_desc = ["RTC Delegate", "Protocol with annotations and functions", "NS_SWIFT_NAME First",
+input_output_pairs_desc = ["Delegate + Interface with tags","RTC Delegate", "Protocol with annotations and functions", "NS_SWIFT_NAME First",
     "Basic Class", "Enums", "class interfaces and complex method params",
     "Protocols", "Class import, interface properties", "Interface methods with no params, and multi params"
 ]
-input_output_pairs = [("""@protocol AgoraRtcEngineDelegate <NSObject>
+input_output_pairs = [("""@class AgoraRtcEngineKit;
+@class AgoraMediaRecorder;
+
+@protocol AgoraRtcEngineDelegate <NSObject>
+@optional
+
+#pragma mark Delegate Methods
+
+#pragma mark Core Delegate Methods
+
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine firstRemoteVideoFrameOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed NS_SWIFT_NAME(rtcEngine(_:firstRemoteVideoFrameOfUid:size:elapsed:));
+
+@end
+
+@interface AgoraRtcEngineKit : NSObject
+@end""", """@class AgoraRtcEngineKit;
+@class AgoraMediaRecorder;
+
+/* class_agorartcenginedelegate */
+@protocol AgoraRtcEngineDelegate <NSObject>
+@optional
+
+#pragma mark Delegate Methods
+
+#pragma mark Core Delegate Methods
+
+/* api_agorartcenginedelegate_firstremotevideoframeofuid##engine#uid#size#elapsed */
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine firstRemoteVideoFrameOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed NS_SWIFT_NAME(rtcEngine(_:firstRemoteVideoFrameOfUid:size:elapsed:));
+
+@end
+
+/* class_agorartcenginekit */
+@interface AgoraRtcEngineKit : NSObject
+@end"""),("""@protocol AgoraRtcEngineDelegate <NSObject>
 @optional
 
 #pragma mark Delegate Methods

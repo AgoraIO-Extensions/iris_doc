@@ -175,6 +175,12 @@ return3: ""
                 ],
                 "returns": "",
                 "is_hide": false
+            },
+            {
+                "id": "callback_irtcengineeventhandler_onfirstremotevideoframe",
+                "name": "firstRemoteVideoFrameOfUid",
+                "description": "Occurs when the renderer receives the first frame of the remote video.",
+                "parameters": [ { "engine": "AgoraRtcEngineKit object." }, { "uid": "The ID of the remote user sending the video stream." }, { "size": "The video dimension." }, { "elapsed": "The time elapsed (ms) from the local user calling joinChannelByToken [2/4] until the SDK triggers this callback." } ], "returns": "", "is_hide": false
             }
         ]
                 """)
@@ -193,6 +199,8 @@ return3: ""
     didRhythmPlayerStateChanged:(AgoraRhythmPlayerState)state
                       errorCode:(AgoraRhythmPlayerError)errorCode
     NS_SWIFT_NAME(rtcEngine(_:didRhythmPlayerStateChanged:errorCode:));
+
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine firstRemoteVideoFrameOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed NS_SWIFT_NAME(rtcEngine(_:firstRemoteVideoFrameOfUid:size:elapsed:));
 @end
         """)
         file.flush()
@@ -231,6 +239,14 @@ return3: ""
     didRhythmPlayerStateChanged:(AgoraRhythmPlayerState)state
                       errorCode:(AgoraRhythmPlayerError)errorCode
     NS_SWIFT_NAME(rtcEngine(_:didRhythmPlayerStateChanged:errorCode:));
+
+/// Occurs when the renderer receives the first frame of the remote video.
+///
+/// - Parameter engine: AgoraRtcEngineKit object.
+/// - Parameter uid: The ID of the remote user sending the video stream.
+/// - Parameter size: The video dimension.
+/// - Parameter elapsed: The time elapsed (ms) from the local user calling joinChannelByToken [2/4] until the SDK triggers this callback.
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine firstRemoteVideoFrameOfUid:(NSUInteger)uid size:(CGSize)size elapsed:(NSInteger)elapsed NS_SWIFT_NAME(rtcEngine(_:firstRemoteVideoFrameOfUid:size:elapsed:));
 @end
         """
         self.assertEqual(result, expected_content)
