@@ -8,7 +8,7 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
         """
         Return a matched comments or None. Objective-C Comments start with /* or ///
         """
-        if line.strip().startswith("/*") or line.strip().startswith("*") or line.strip().startswith("*/") or line.strip().startswith("///"):
+        if line.strip().startswith("/*") or line.strip().startswith("*") or line.strip().startswith("*/") or (line.strip().endswith("*/") and '/*' not in line.strip()) or line.strip().startswith("///"):
             return line
         return None
 
