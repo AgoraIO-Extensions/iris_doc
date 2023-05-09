@@ -271,18 +271,14 @@ class DefaultLineScanner(LineScanner):
         scopeStack.append(scopeStartIndex)
 
         i = scopeStartIndex + 1
-        has_match_function_start = False
 
         while (i < len(lines)):
             line = lines[i].strip()
-            if self.__syntaxMatcher.matchClassScopeEnd(line) or \
-                    (has_match_function_start and self.__syntaxMatcher.matchFunctioinScopeEnd(line)):
-                scopeStack.pop()
-                has_match_function_start = False
-            elif self.__syntaxMatcher.matchFunctioinScopeStart(line):
+            if self.__syntaxMatcher.matchFunctioinScopeStart(line) or self.__syntaxMatcher.matchClassScopeStart(line):
                 scopeStack.append(i)
-                has_match_function_start = True
-
+            if self.__syntaxMatcher.matchClassScopeEnd(line) or \
+                    (not self.__syntaxMatcher.matchMemberVariable(line) and self.__syntaxMatcher.matchFunctioinScopeEnd(line)):
+                scopeStack.pop()
             if len(scopeStack) == 0:
                 return i
 
