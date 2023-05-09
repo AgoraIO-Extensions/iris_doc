@@ -144,9 +144,9 @@ class LanguageSpecificationModule:
                 parentElement = next(
                     (e for e in elementsCopy if e['id'] == f"{tmpType}_{newName1}"), None)
                 if parentElement:
-                    newName1 = parentElement['name'].lower().translate(str.maketrans("", "", "()"))
+                    newName1 = parentElement['name'].lower()
                 else:
-                    newName1 = element['name'].lower().translate(str.maketrans("", "", "()"))
+                    newName1 = element['name'].lower()
 
                 if self.__config.isCallback2api and newType == "callback":
                     newType = "api"

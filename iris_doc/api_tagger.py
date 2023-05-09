@@ -586,7 +586,7 @@ class DefaultLineScanner(LineScanner):
             extensionName = self.__syntaxMatcher.matchExtension(fileLine)
             if extensionName:
                 extensionTokens = self._getClassTokens(
-                    className=extensionName.replace('(','').replace(')',''), lineIndex=lineIndex, type=TYPE_EXTENSION)
+                    className=extensionName, lineIndex=lineIndex, type=TYPE_EXTENSION)
                 tokens.extend(extensionTokens[1])
                 lineIndex = extensionTokens[0] + 1
                 continue
