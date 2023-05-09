@@ -303,6 +303,7 @@ class DefaultLineScanner(LineScanner):
         scopeStack.append(scopeStartIndex)
 
         i = scopeStartIndex + 1
+
         while (i < len(lines)):
             line = lines[i].strip()
             if self.__syntaxMatcher.matchFunctionScopeStart(line) or self.__syntaxMatcher.matchClassScopeStart(line):
@@ -620,7 +621,7 @@ class DefaultLineScanner(LineScanner):
             extensionName = self.__syntaxMatcher.matchExtension(fileLine)
             if extensionName:
                 extensionTokens = self._getClassTokens(
-                    className=extensionName.replace('(','').replace(')',''), lineIndex=lineIndex, type=TYPE_EXTENSION)
+                    className=extensionName, lineIndex=lineIndex, type=TYPE_EXTENSION)
                 tokens.extend(extensionTokens[1])
                 lineIndex = extensionTokens[0] + 1
                 continue
