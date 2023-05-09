@@ -190,10 +190,10 @@ typedef NS_ENUM(NSInteger, AgoraAudienceLatencyLevelType) {
                    delegate:(id<AgoraRtcEngineDelegate> _Nullable)delegate
                mediaOptions:(AgoraRtcChannelMediaOptions* _Nonnull)mediaOptions
                 joinSuccess:(void(^ _Nullable)(NSString* _Nonnull channel, NSUInteger uid, NSInteger elapsed))joinSuccessBlock NS_SWIFT_NAME(joinChannelEx(byToken:connection:delegate:mediaOptions:joinSuccess:));
-@end""", """/* extension_agorartcenginekitex */
+@end""", """/* extension_agorartcenginekit(ex) */
 NS_ASSUME_NONNULL_BEGIN
 @interface AgoraRtcEngineKit(Ex)
-/* api_agorartcenginekitex_joinchannelexbytoken##token#connection#delegate#mediaoptions#joinsuccessblock */
+/* api_agorartcenginekit(ex)_joinchannelexbytoken##token#connection#delegate#mediaoptions#joinsuccessblock */
 - (int)joinChannelExByToken:(NSString* _Nullable)token
                  connection:(AgoraRtcConnection * _Nonnull)connection
                    delegate:(id<AgoraRtcEngineDelegate> _Nullable)delegate
@@ -293,6 +293,7 @@ class TestApiTaggerOc(unittest.TestCase):
 
             expectedContent = test[1]
             processedContent = self.__fileSystem.readtext(path)
+            print(processedContent)
             self.assertEqual(processedContent, expectedContent)
 
 if __name__ == '__main__':
