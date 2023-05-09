@@ -277,6 +277,7 @@ class DefaultLineScanner(LineScanner):
         scopeStack.append(scopeStartIndex)
 
         i = scopeStartIndex + 1
+
         while (i < len(lines)):
             line = lines[i].strip()
             if self.__syntaxMatcher.matchFunctionScopeStart(line) or self.__syntaxMatcher.matchClassScopeStart(line):
@@ -334,7 +335,6 @@ class DefaultLineScanner(LineScanner):
             if len(scopeStack) == 0:
                 return i
 
-# >>>>>>> 4c84c587033b70a2a6eb0cb938846a39abc97318
             i += 1
 
         return -1
