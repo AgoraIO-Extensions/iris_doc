@@ -1,5 +1,5 @@
 from iris_doc.api_tagger import TYPE_API, TYPE_CLASS, TYPE_CONSTRUCT, TYPE_EXTENSION, LanguageSyntaxMatcher, Token, LineScanner, DefaultLineScanner, TagBuilder
-from typing import List, Tuple
+from typing import List, Optional
 import re
 
 
@@ -130,6 +130,22 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
     def matchFunctionParameterScopeEnd(self, line: str) -> bool:
         return ';' in line
 
+    def findFunctionNameFromBlock(self, block: str, current_name: Optional[str]) -> str:
+        if not current_name:
+            current_name = self.matchMemberFunction(block)
+        if current_name.lower() in ["rtcengine"]:
+            return self.findCallbackName(current_name, block)
+        return None
+
+    def findCallbackName(self, function_name: str, line: str) -> str:
+        pattern = r'([^:\n-+]*):'
+
+        matches: List[str] = re.findall(pattern, line.split('NS_SWIFT_NAME')[0].strip())
+
+        if len(matches) > 1:
+            return matches[1]
+        return function_name
+
     def matchCallbackReplacer(self, function_name: str) -> bool:
         return function_name.lower() in ["rtcengine"]
 
@@ -149,15 +165,6 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
 
         matches_joined = ':'.join(matches)
         return f'{class_name}/{matches_joined}'
-
-    def findCallbackName(self, function_name: str, line: str) -> str:
-        pattern = r'([^:\n-+]*):'
-
-        matches: List[str] = re.findall(pattern, line.split('NS_SWIFT_NAME')[0].strip())
-
-        if len(matches) > 1:
-            return matches[1]
-        return function_name
 
 class ObjCToken(Token):
 
