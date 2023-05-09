@@ -130,6 +130,12 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
     def matchFunctionParameterScopeEnd(self, line: str) -> bool:
         return ';' in line
 
+    def matchMemberVariableScopeStart(self, line: str) -> bool:
+        return re.match(r'@property.*\b(\w+)\b', line.strip()) is not None
+
+    def matchMemberVariableScopeEnd(self, line: str) -> bool:
+        return ';' in line
+
     def findFunctionNameFromBlock(self, block: str, current_name: Optional[str]) -> str:
         if not current_name:
             current_name = self.matchMemberFunction(block)

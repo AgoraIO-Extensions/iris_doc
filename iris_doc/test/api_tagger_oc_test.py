@@ -133,7 +133,8 @@ input_output_pairs = [("""@class AgoraRtcEngineKit;
     result:(AgoraRtmStreamChannelErrorCode)errorCode;
 @end"""),
 ("""NS_SWIFT_NAME(AgoraVideoRenderingTracingInfo) __attribute__((visibility("default"))) @interface AgoraVideoRenderingTracingInfo : NSObject
-@property (assign, nonatomic) NSInteger elapsedTime NS_SWIFT_NAME(elapsedTime);
+@property (assign, nonatomic)
+    NSInteger elapsedTime NS_SWIFT_NAME(elapsedTime);
 @property (assign, nonatomic) NSInteger start2JoinChannel NS_SWIFT_NAME(start2JoinChannel);
 @property (assign, nonatomic) NSInteger join2JoinSuccess NS_SWIFT_NAME(join2JoinSuccess);
 @property (assign, nonatomic) NSInteger joinSuccess2RemoteJoined NS_SWIFT_NAME(joinSuccess2RemoteJoined);
@@ -144,7 +145,8 @@ input_output_pairs = [("""@class AgoraRtcEngineKit;
 @end""","""/* class_agoravideorenderingtracinginfo */
 NS_SWIFT_NAME(AgoraVideoRenderingTracingInfo) __attribute__((visibility("default"))) @interface AgoraVideoRenderingTracingInfo : NSObject
 /* class_agoravideorenderingtracinginfo_elapsedtime */
-@property (assign, nonatomic) NSInteger elapsedTime NS_SWIFT_NAME(elapsedTime);
+@property (assign, nonatomic)
+    NSInteger elapsedTime NS_SWIFT_NAME(elapsedTime);
 /* class_agoravideorenderingtracinginfo_start2joinchannel */
 @property (assign, nonatomic) NSInteger start2JoinChannel NS_SWIFT_NAME(start2JoinChannel);
 /* class_agoravideorenderingtracinginfo_join2joinsuccess */

@@ -113,6 +113,12 @@ class LanguageSyntaxMatcher(ABC):
         """
         pass
 
+    def matchMemberVariableScopeStart(self, line: str) -> bool:
+        return self.matchMemberVariable(line) is not None
+
+    def matchMemberVariableScopeEnd(self, line: str) -> bool:
+        return self.matchMemberVariable(line) is not None
+
     def matchExtensionScopeStart(self, line: str) -> bool:
         """
         Whether match the extension scope start
@@ -301,12 +307,10 @@ class DefaultLineScanner(LineScanner):
             line = lines[i].strip()
             if self.__syntaxMatcher.matchFunctionScopeStart(line) or self.__syntaxMatcher.matchClassScopeStart(line):
                 scopeStack.append(i)
-            if self.__syntaxMatcher.matchClassScopeEnd(line) or \
-                    (not self.__syntaxMatcher.matchMemberVariable(line) and self.__syntaxMatcher.matchFunctionScopeEnd(line)):
+            if self.__syntaxMatcher.matchClassScopeEnd(line) or self.__syntaxMatcher.matchFunctionScopeEnd(line):
                 scopeStack.pop()
             if len(scopeStack) == 0:
                 return i
-
             i += 1
 
         return -1
@@ -405,7 +409,12 @@ class DefaultLineScanner(LineScanner):
                     name2=ctName,
                     annotations=self._getAnnotations(i)))
             # Match member variable
-            elif mvName := self.__syntaxMatcher.matchMemberVariable(line):
+            elif self.__syntaxMatcher.matchMemberVariableScopeStart(line):
+                # Some Objective C properties are across multiple lines, for example
+                # @property (assign, nonatomic)
+                #    NSInteger elapsedTime NS_SWIFT_NAME(elapsedTime);
+                end_line = self._findMatchingIndex(self.__fileLines, i, self.__syntaxMatcher.matchMemberVariableScopeEnd)
+                mvName = self.__syntaxMatcher.matchMemberVariable(' '.join(self.__fileLines[i:end_line+1]))
                 # On some languages(e.g., dart) the member variable with Function type can lead to the
                 # declaration to be formatted to multiple lines, such like:
                 # ```
@@ -419,7 +428,8 @@ class DefaultLineScanner(LineScanner):
                 # so we need to find upon current line to get the correct insert index
                 j = i
                 while j - 1 >= classScopeStartIndex + 1 and self.__fileLines[j - 1].strip() != "" and \
-                        not self.__syntaxMatcher.matchMemberVariable(self.__fileLines[j - 1].strip()) and \
+                    not self.__syntaxMatcher.matchMemberVariableScopeStart(self.__fileLines[j - 1].strip()) and \
+                    not self.__syntaxMatcher.matchMemberVariableScopeEnd(self.__fileLines[j - 1].strip()) and \
                         not self.__syntaxMatcher.matchAnnotation(self.__fileLines[j - 1].strip()):
                     j -= 1
                 tokens.append(self._createToken(
@@ -428,6 +438,7 @@ class DefaultLineScanner(LineScanner):
                     name1=className,
                     name2=mvName,
                     annotations=self._getAnnotations(j)))
+                i = end_line
 
             # Match member function
             elif mfName := self.__syntaxMatcher.matchMemberFunction(line):
