@@ -134,10 +134,10 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
         return re.findall(r':\s*\([\w+\s*\*?\s*_?\(\)^<>,\w+\s*]*\)(\w+)', line.strip())
 
     def matchFunctionScopeStart(self, line: str) -> bool:
-        return self.matchMemberFunction(line)
+        return '{' in line
 
     def matchFunctionScopeEnd(self, line: str) -> bool:
-        return self.matchFunctionParameterScopeEnd(line)
+        return '}' in line
 
 class ObjCToken(Token):
 
