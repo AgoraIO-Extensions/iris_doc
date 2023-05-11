@@ -288,6 +288,14 @@ class DefaultLineScanner(LineScanner):
             i += 1
         return -1
 
+    def _findExtensionScopeStartIndex(self, lines: List[str], startIndex: int) -> int:
+        i = startIndex
+        while(i < len(lines)):
+            if self.__syntaxMatcher.matchExtensionScopeStart(lines[i]):
+                return i
+            i += 1
+        return -1
+
     def _findClassScopeStartIndex(self, lines: List[str], startIndex: int) -> int:
         return self._findMatchingIndex(lines, startIndex, self.__syntaxMatcher.matchClassScopeStart)
 
