@@ -2,7 +2,7 @@ from enum import IntEnum
 import json
 import re
 from fs.base import FS
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List
 
 
 class Structure:
