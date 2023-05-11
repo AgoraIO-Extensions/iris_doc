@@ -22,7 +22,6 @@ class TSSyntaxMatcher(LanguageSyntaxMatcher):
         return None
 
     def matchMemberFunction(self, line: str) -> str:
-        # TODO: It passes all tests with just the second regex match. Delete first?
         m = re.match(
             r'(abstract |get |set |public |private )([A-Za-z0-9_]+)\((.*)(\)?( {)?|;?)$', line.strip())
         if m:
