@@ -293,7 +293,6 @@ class TestApiTaggerOc(unittest.TestCase):
 
             expectedContent = test[1]
             processedContent = self.__fileSystem.readtext(path)
-            print(processedContent)
             self.assertEqual(processedContent, expectedContent)
 
 if __name__ == '__main__':

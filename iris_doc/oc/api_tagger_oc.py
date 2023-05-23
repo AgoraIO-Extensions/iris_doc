@@ -152,9 +152,6 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
             return matches[1]
         return function_name
 
-    def matchCallbackReplacer(self, function_name: str) -> bool:
-        return function_name.lower() in ["rtcengine"]
-
     def findFunctionParameterList(self, function_name: str, line: str) -> List[str]:
         return re.findall(r':\s*\([\w+\s*\*?\s*_?\(\)^<>,\w+\s*]*\)(\w+)', line.strip())
 

@@ -183,19 +183,6 @@ class LanguageSyntaxMatcher(ABC):
         """
         pass
 
-    def matchCallbackReplacer(self, function_name: str) -> bool:
-        """
-        If this matches, we need to find the method name a different way than normal.
-        This is used for Objective-C delegate methods, for example.
-        """
-        return False
-
-    def findCallbackName(self, function_name: str, line: str) -> str:
-        """
-        Find the callback name, for methods like rtcEngine() in iOS.
-        """
-        return function_name
-
     def findFunctionLink(self, class_name: str, line: str) -> str:
         """
         Get the link to an API method, given the class name and method line (flattened)
@@ -464,7 +451,7 @@ class DefaultLineScanner(LineScanner):
             i += 1
         return (classScopeEndIndex, tokens)
 
-    def _findBoundsMatching(
+    def _findMatchingBounds(
             self,
             function_name: str,
             start_end: Tuple[int, int],
@@ -494,7 +481,7 @@ class DefaultLineScanner(LineScanner):
                                   startIndex: int,
                                   endIndex: int) -> Tuple[List[str], int, int]:
         parameterList: List[str] = []
-        [parameterScopeStartIndex, parameterScopeEndIndex] = self._findBoundsMatching(
+        [parameterScopeStartIndex, parameterScopeEndIndex] = self._findMatchingBounds(
             functionName, [startIndex, endIndex],
             self.__syntaxMatcher.matchFunctionParameterScopeStart, self.__syntaxMatcher.matchFunctionParameterScopeEnd
         )
