@@ -177,7 +177,7 @@ class LanguageSyntaxMatcher(ABC):
         return ")" in line
 
     @abstractmethod
-    def findFunctionParameterList(self, function_name: str, line: str) -> List[str]:
+    def findFunctionParameterList(self, function_name: str, lines: List[str]) -> List[str]:
         """
         Find the function parameters as List
         """
@@ -486,11 +486,8 @@ class DefaultLineScanner(LineScanner):
             self.__syntaxMatcher.matchFunctionParameterScopeStart, self.__syntaxMatcher.matchFunctionParameterScopeEnd
         )
 
-        parameterBlockLine = " ".join(map(
-            lambda x: x.strip(), self.__fileLines[parameterScopeStartIndex:parameterScopeEndIndex + 1]
-        ))
         parameterList = self.__syntaxMatcher.findFunctionParameterList(
-            functionName, parameterBlockLine)
+            functionName, self.__fileLines[parameterScopeStartIndex:parameterScopeEndIndex + 1])
 
         return (parameterList, parameterScopeStartIndex, parameterScopeEndIndex)
 

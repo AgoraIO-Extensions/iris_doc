@@ -152,8 +152,11 @@ class ObjCSyntaxMatcher(LanguageSyntaxMatcher):
             return matches[1]
         return function_name
 
-    def findFunctionParameterList(self, function_name: str, line: str) -> List[str]:
-        return re.findall(r':\s*\([\w+\s*\*?\s*_?\(\)^<>,\w+\s*]*\)(\w+)', line.strip())
+    def findFunctionParameterList(self, function_name: str, lines: List[str]) -> List[str]:
+        single_line = " ".join(map(
+            lambda x: x.strip(), lines
+        ))
+        return re.findall(r':\s*\([\w+\s*\*?\s*_?\(\)^<>,\w+\s*]*\)(\w+)', single_line)
 
     def matchFunctionScopeStart(self, line: str) -> bool:
         return '{' in line
