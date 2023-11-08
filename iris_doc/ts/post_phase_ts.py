@@ -12,6 +12,7 @@ class PostPhaseTS(PostPhase):
         self.__executePath = executePath
 
     def run(self) -> Any:
+        return
         p = subprocess.Popen(
             ["yarn", "install", "--frozen-lockfile"],
             cwd=self.__executePath)
