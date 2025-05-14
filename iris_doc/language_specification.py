@@ -115,12 +115,17 @@ class LanguageSpecificationModule:
     def specialize(self) -> bool:
         pass
 
-    def __parseJson(self, jsonContent: str):
+    def __parseJson(self, jsonContent: str, lang: str):
         elementsCopy = json.loads(jsonContent)
         for element in json.loads(jsonContent):
             id_: str = element['id']
 
             name_: str = element['name'].lower()
+
+            if lang == "oc":
+                # Remove anything after and including ':'
+                if ':' in name_:
+                    name_ = name_.split(':')[0].strip()
 
             tmpSource = CommentSource.from_json(json.dumps(element))
 
@@ -203,11 +208,11 @@ class LanguageSpecificationModule:
             else:
                 self.__commentSources[element['id']] = finalCommentSource
 
-    def deserialize(self) -> ErrorType:
+    def deserialize(self, lang: str) -> ErrorType:
         for path in self.__templateFilePaths:
             with self.__fileSystem.open(path, 'r') as file:
                 jsonContent = file.read()
-                self.__parseJson(jsonContent)
+                self.__parseJson(jsonContent, lang)
 
         return ErrorType.Ok
 

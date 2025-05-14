@@ -71,6 +71,7 @@ def _processExportFile(
         exportFilePath: str,
         templateFilePathList: List[str],
         fileSystem: FS,
+        lang: str,
         isForceMarkNoDoc: bool):
     config = ConfigurationReader(fileSystem)
     config.set_config(configPath)
@@ -81,7 +82,7 @@ def _processExportFile(
     module.setLanguageSpecificationConfig(languageSpecificationConfig)
     for p in templateFilePathList:
         module.addTemplateFilePath(p)
-    module.deserialize()
+    module.deserialize(lang)
 
     exportFiles = exportFileParser.parseExportFiles(exportFilePath)
     for path in exportFiles:
@@ -218,6 +219,7 @@ def run():
                        exportFilePath=exportFilePath,
                        templateFilePathList=templateFilePathList,
                        fileSystem=fileSystem,
-                       isForceMarkNoDoc=isForceMarkNoDoc)
+                       isForceMarkNoDoc=isForceMarkNoDoc,
+                       lang= lang)
 
     fileSystem.close()
